@@ -1,637 +1,91 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DrawBoard</title>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0d1117;--panel:#161b22;--panel2:#21262d;--border:#30363d;
-  --accent:#58a6ff;--success:#3fb950;--danger:#f85149;
-  --text:#e6edf3;--muted:#8b949e;--hover:rgba(88,166,255,.1);
-}
-body{font-family:'JetBrains Mono','Fira Code','Courier New',monospace;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;-webkit-user-select:none;user-select:none}
-
-/* ── TOOLBAR ── */
-#toolbar{height:50px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:3px;flex-shrink:0;z-index:50}
-.sep{width:1px;height:28px;background:var(--border);margin:0 6px;flex-shrink:0}
-.tbtn{width:36px;height:36px;background:transparent;border:1.5px solid transparent;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;transition:all .12s;flex-shrink:0;padding:0}
-.tbtn:hover{background:var(--hover);border-color:var(--accent);color:var(--text)}
-.tbtn.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 10px rgba(88,166,255,.35)}
-.tbtn svg{pointer-events:none}
-.clr-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
-.clr-wrap span{font-size:8px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
-.clr-inp{width:30px;height:28px;border-radius:5px;border:1.5px solid var(--border);cursor:pointer;padding:2px;background:none}
-.clr-inp::-webkit-color-swatch-wrapper{padding:0}
-.clr-inp::-webkit-color-swatch{border:none;border-radius:3px}
-.sw-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;min-width:100px}
-.sw-wrap>span{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.sw-row{display:flex;align-items:center;gap:6px}
-input[type=range].swr{-webkit-appearance:none;width:75px;height:4px;border-radius:2px;background:var(--panel2);outline:none;accent-color:var(--accent)}
-input[type=range].swr::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff}
-.sw-v{font-size:10px;color:var(--text);min-width:18px;text-align:right}
-.logo{margin-left:auto;font-size:11px;color:var(--muted);letter-spacing:.5px}
-.logo b{color:var(--accent)}
-
-/* ── MAIN LAYOUT ── */
-#main{display:flex;flex:1;overflow:hidden}
-
-/* ── SHAPE PANEL ── */
-#spanel{width:68px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:5px;overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-#spanel::-webkit-scrollbar{width:3px}
-#spanel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.plabel{font-size:7px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin:4px 0 2px}
-.sitem{width:50px;height:50px;background:var(--panel2);border:1.5px solid var(--border);border-radius:8px;cursor:grab;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;position:relative}
-.sitem:hover{border-color:var(--accent);background:var(--hover);transform:scale(1.05)}
-.sitem:active{cursor:grabbing;transform:scale(.96)}
-.sitem svg{pointer-events:none}
-
-/* ── CANVAS ── */
-#cvwrap{flex:1;position:relative;overflow:hidden;background:#FFFFFF}
-#cv{width:100%;height:100%;display:block;position:absolute;top:0;left:0}
-
-/* ── SVG ELEMENT STYLES ── */
-.fp{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.cl{fill:none;stroke-linecap:round;cursor:pointer;pointer-events:visibleStroke}
-.clt{fill:none;stroke-dasharray:7 4;pointer-events:none}
-.shape-g{cursor:move}
-.cp{fill:var(--accent,#58a6ff);stroke:#fff;stroke-width:1.5;opacity:0;cursor:crosshair;pointer-events:all;transition:opacity .1s}
-.shape-g:hover .cp{opacity:.8}
-.cp:hover,.cp.cphover{opacity:1!important;fill:var(--success)!important}
-.svg-connecting .cp{opacity:.5}
-.svg-connecting .cp:hover,.svg-connecting .cp.cphover{opacity:1;fill:var(--success)}
-.slabel{fill:#e6edf3;font-size:11px;text-anchor:middle;dominant-baseline:middle;pointer-events:none;font-family:'JetBrains Mono',monospace}
-
-/* ── STATUS BAR ── */
-#sb{height:22px;background:var(--panel);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;font-size:9px;color:var(--muted);gap:16px;flex-shrink:0}
-#sb b{color:var(--accent)}
-
-/* ── DRAG GHOST ── */
-#ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.65;transform:translate(-50%,-50%);display:none}
-
-/* ── TOOLTIP ── */
-.tip{position:fixed;background:var(--panel2);border:1px solid var(--border);color:var(--text);font-size:9px;padding:3px 7px;border-radius:4px;pointer-events:none;z-index:9999;white-space:nowrap;transform:translateX(-50%)}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrawBoard Pro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="toolbar">
-  <button class="tbtn active" data-tool="select" title="선택 (V)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 1L13 7.5L8 8.7L5.5 14L2 1Z" stroke-linejoin="round"/></svg></button>
-  <button class="tbtn" data-tool="pen" title="펜 (P)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.5 1.5L13.5 4.5L5.5 12.5L1.5 13.5L2.5 9.5L10.5 1.5Z" stroke-linejoin="round"/></svg></button>
-  <button class="tbtn" data-tool="eraser" title="지우개 (E)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11L6 4L12 7L8 13H3L2 11Z" stroke-linejoin="round"/><line x1="2" y1="13" x2="13" y2="13"/></svg></button>
-  <button class="tbtn" data-tool="connect" title="연결선 (C)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3" cy="7.5" r="2"/><circle cx="12" cy="7.5" r="2"/><path d="M5 7.5 C6.5 4.5, 8.5 10.5, 10 7.5" fill="none"/></svg></button>
-  <div class="sep"></div>
-  <div class="clr-wrap">
-    <input type="color" class="clr-inp" id="sc" value="#58a6ff" title="선 색상">
-    <span>선색</span>
-  </div>
-  <div class="clr-wrap">
-    <input type="color" class="clr-inp" id="fc" value="#21262d" title="채우기">
-    <span>채우기</span>
-  </div>
-  <div class="sep"></div>
-  <div class="sw-wrap">
-    <span>굵기</span>
-    <div class="sw-row">
-      <input type="range" class="swr" id="sw" min="1" max="20" value="2">
-      <span class="sw-v" id="swv">2</span>
+    <button class="tbtn active" data-tool="select" title="선택 (V)">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 1L13 7.5L8 8.7L5.5 14L2 1Z" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tbtn" data-tool="pen" title="펜 (P)">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.5 1.5L13.5 4.5L5.5 12.5L1.5 13.5L2.5 9.5L10.5 1.5Z" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="tbtn" data-tool="eraser" title="지우개 (E)">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11L6 4L12 7L8 13H3L2 11Z" stroke-linejoin="round"/><line x1="2" y1="13" x2="13" y2="13"/></svg>
+    </button>
+    <button class="tbtn" data-tool="connect" title="연결선 (C)">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3" cy="7.5" r="2"/><circle cx="12" cy="7.5" r="2"/><path d="M5 7.5 C6.5 4.5, 8.5 10.5, 10 7.5" fill="none"/></svg>
+    </button>
+    <div class="sep"></div>
+    <div class="clr-wrap">
+        <input type="color" class="clr-inp" id="sc" value="#58a6ff" title="선 색상">
+        <span>선색</span>
     </div>
-  </div>
-  <div class="sep"></div>
-  <button class="tbtn" id="btn-del" title="선택 삭제 (Del)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="3" y1="3" x2="12" y2="12"/><line x1="12" y1="3" x2="3" y2="12"/></svg></button>
-  <button class="tbtn" id="btn-clear" title="전체 지우기"><svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4.5H12M5.5 4.5V3H9.5V4.5M6 4.5L6.5 12H8.5L9 4.5"/></svg></button>
-  <div class="logo">Draw<b>Board</b></div>
+    <div class="clr-wrap">
+        <input type="color" class="clr-inp" id="fc" value="#21262d" title="채우기">
+        <span>채우기</span>
+    </div>
+    <div class="sep"></div>
+    <div class="sw-wrap">
+        <span>굵기</span>
+        <div class="sw-row">
+            <input type="range" class="swr" id="sw" min="1" max="20" value="2">
+            <span class="sw-v" id="swv">2</span>
+        </div>
+    </div>
+    <div class="sep"></div>
+    <button class="tbtn" id="btn-del" title="선택 삭제 (Del)">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="3" y1="3" x2="12" y2="12"/><line x1="12" y1="3" x2="3" y2="12"/></svg>
+    </button>
+    <button class="tbtn" id="btn-clear" title="전체 지우기">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4.5H12M5.5 4.5V3H9.5V4.5M6 4.5L6.5 12H8.5L9 4.5"/></svg>
+    </button>
+    <div class="logo">Draw<b>Board</b></div>
 </div>
 
 <div id="main">
-  <div id="spanel"><div class="plabel">도형</div></div>
-  <div id="cvwrap">
-    <svg id="cv" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="sg" width="24" height="24" patternUnits="userSpaceOnUse">
-          <path d="M24 0L0 0 0 24" fill="none" stroke="#1c2128" stroke-width="1"/>
-        </pattern>
-        <pattern id="lg" width="120" height="120" patternUnits="userSpaceOnUse">
-          <rect width="120" height="120" fill="url(#sg)"/>
-          <path d="M120 0L0 0 0 120" fill="none" stroke="#252c36" stroke-width="1.5"/>
-        </pattern>
-        <marker id="arr" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
-          <polygon points="0 0,9 3,0 6" fill="#58a6ff"/>
-        </marker>
-        <marker id="arr-sel" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
-          <polygon points="0 0,9 3,0 6" fill="#3fb950"/>
-        </marker>
-      </defs>
-      <rect id="cvbg" width="100%" height="100%" fill="url(#lg)" pointer-events="all"/>
-      <g id="lp"></g>
-      <g id="lc"></g>
-      <g id="ls"></g>
-      <g id="lt"></g>
-    </svg>
-  </div>
+    <div id="spanel"><div class="plabel">도형</div></div>
+    <div id="cvwrap">
+        <svg id="cv" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="sg" width="24" height="24" patternUnits="userSpaceOnUse">
+                    <path d="M24 0L0 0 0 24" fill="none" stroke="#1c2128" stroke-width="1"/>
+                </pattern>
+                <pattern id="lg" width="120" height="120" patternUnits="userSpaceOnUse">
+                    <rect width="120" height="120" fill="url(#sg)"/>
+                    <path d="M120 0L0 0 0 120" fill="none" stroke="#252c36" stroke-width="1.5"/>
+                </pattern>
+                <marker id="arr" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0,9 3,0 6" fill="#58a6ff"/>
+                </marker>
+                <marker id="arr-sel" markerWidth="9" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0,9 3,0 6" fill="#3fb950"/>
+                </marker>
+            </defs>
+            <rect id="cvbg" width="100%" height="100%" fill="url(#lg)" pointer-events="all"/>
+            <g id="lp"></g>
+            <g id="lc"></g>
+            <g id="ls"></g>
+            <g id="lt"></g>
+        </svg>
+    </div>
 </div>
 
 <div id="sb">
-  <span>🖱 <b id="spos">0, 0</b></span>
-  <span>⚙ <b id="stool">선택 모드</b></span>
-  <span>📊 도형 <b id="scnt">0</b> · 경로 <b id="pcnt">0</b> · 연결 <b id="ccnt">0</b></span>
-  <span style="margin-left:auto">우클릭 = 지우개 · Del = 삭제 · 더블클릭 = 이름 변경</span>
+    <span>🖱 <b id="spos">0, 0</b></span>
+    <span>⚙ <b id="stool">선택 모드</b></span>
+    <span>📊 도형 <b id="scnt">0</b> · 경로 <b id="pcnt">0</b> · 연결 <b id="ccnt">0</b></span>
+    <span style="margin-left:auto">우클릭 = 지우개 · Del = 삭제 · 더블클릭 = 이름 변경</span>
 </div>
 
 <div id="ghost"></div>
 
-<script>
-/* ============================================================
-   SHAPE DEFINITIONS
-   ============================================================ */
-const SD = {
-  rect:{
-    name:'사각형',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><rect x="5" y="11" width="28" height="16" rx="2"/></svg>`,
-    dw:120,dh:75,
-    render(s){return `<rect class="shape-main" x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="3" fill="${s.fill}" stroke="${s.stroke}" stroke-width="${s.sw}"/>`},
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  rrect:{
-    name:'둥근사각',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><rect x="5" y="11" width="28" height="16" rx="8"/></svg>`,
-    dw:120,dh:75,
-    render(s){const r=Math.min(s.w,s.h)*.22;return `<rect class="shape-main" x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="${r}" fill="${s.fill}" stroke="${s.stroke}" stroke-width="${s.sw}"/>`},
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  circle:{
-    name:'원',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><circle cx="19" cy="19" r="13"/></svg>`,
-    dw:100,dh:100,
-    render(s){return `<ellipse class="shape-main" cx="${s.x+s.w/2}" cy="${s.y+s.h/2}" rx="${s.w/2}" ry="${s.h/2}" fill="${s.fill}" stroke="${s.stroke}" stroke-width="${s.sw}"/>`},
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  diamond:{
-    name:'다이아몬드',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><polygon points="19,4 34,19 19,34 4,19"/></svg>`,
-    dw:110,dh:80,
-    render(s){const{x,y,w,h,fill,stroke,sw}=s;return `<polygon class="shape-main" points="${x+w/2},${y} ${x+w},${y+h/2} ${x+w/2},${y+h} ${x},${y+h/2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`},
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  triangle:{
-    name:'삼각형',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><polygon points="19,5 35,33 3,33"/></svg>`,
-    dw:100,dh:90,
-    render(s){const{x,y,w,h,fill,stroke,sw}=s;return `<polygon class="shape-main" points="${x+w/2},${y} ${x+w},${y+h} ${x},${y+h}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`},
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w*.75,y:y+h*.55},{id:'b',x:x+w/2,y:y+h},{id:'l',x:x+w*.25,y:y+h*.55}]}
-  },
-  hexagon:{
-    name:'육각형',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><polygon points="19,3 33,11 33,27 19,35 5,27 5,11"/></svg>`,
-    dw:100,dh:100,
-    render(s){
-      const{x,y,w,h,fill,stroke,sw}=s,cx=x+w/2,cy=y+h/2;
-      const pts=Array.from({length:6},(_,i)=>{const a=Math.PI/3*i-Math.PI/6;return `${cx+w/2*Math.cos(a)},${cy+h/2*Math.sin(a)}`});
-      return `<polygon class="shape-main" points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-    },
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'tr',x:x+w,y:y+h*.25},{id:'br',x:x+w,y:y+h*.75},{id:'b',x:x+w/2,y:y+h},{id:'bl',x,y:y+h*.75},{id:'tl',x,y:y+h*.25}]}
-  },
-  parallelogram:{
-    name:'평행사변형',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><polygon points="10,30 16,8 38,8 32,30"/></svg>`,
-    dw:130,dh:70,
-    render(s){const{x,y,w,h,fill,stroke,sw}=s,o=w*.2;return `<polygon class="shape-main" points="${x+o},${y} ${x+w},${y} ${x+w-o},${y+h} ${x},${y+h}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`},
-    cp(s){const{x,y,w,h}=s,o=w*.2;return[{id:'t',x:x+w/2+o/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2-o/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  cylinder:{
-    name:'실린더',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><ellipse cx="19" cy="9" rx="13" ry="5"/><line x1="6" y1="9" x2="6" y2="29"/><line x1="32" y1="9" x2="32" y2="29"/><ellipse cx="19" cy="29" rx="13" ry="5"/></svg>`,
-    dw:90,dh:110,
-    render(s){
-      const{x,y,w,h,fill,stroke,sw}=s,ry=h*.14;
-      return `<rect x="${x}" y="${y+ry}" width="${w}" height="${h-ry*2}" fill="${fill}" stroke="none"/>
-              <ellipse cx="${x+w/2}" cy="${y+h-ry}" rx="${w/2}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>
-              <ellipse class="shape-main" cx="${x+w/2}" cy="${y+ry}" rx="${w/2}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>
-              <line x1="${x}" y1="${y+ry}" x2="${x}" y2="${y+h-ry}" stroke="${stroke}" stroke-width="${sw}"/>
-              <line x1="${x+w}" y1="${y+ry}" x2="${x+w}" y2="${y+h-ry}" stroke="${stroke}" stroke-width="${sw}"/>`;
-    },
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  star:{
-    name:'별',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><polygon points="19,3 22,14 33,14 24,21 27,32 19,25 11,32 14,21 5,14 16,14"/></svg>`,
-    dw:100,dh:100,
-    render(s){
-      const{x,y,w,h,fill,stroke,sw}=s,cx=x+w/2,cy=y+h/2,or=Math.min(w,h)/2,ir=or*.4;
-      const pts=Array.from({length:10},(_,i)=>{const a=Math.PI/5*i-Math.PI/2,r=i%2?ir:or;return `${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`});
-      return `<polygon class="shape-main" points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-    },
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  },
-  doc:{
-    name:'문서',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><path d="M6,6 L32,6 L32,28 Q25,22 19,28 Q13,34 6,28 Z"/></svg>`,
-    dw:110,dh:90,
-    render(s){
-      const{x,y,w,h,fill,stroke,sw}=s,wy=y+h*.78;
-      return `<path class="shape-main" d="M${x},${y} L${x+w},${y} L${x+w},${wy} Q${x+w*.75},${y+h*.62} ${x+w*.5},${wy} Q${x+w*.25},${y+h*.94} ${x},${wy} Z" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-    },
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h*.4},{id:'b',x:x+w/2,y:y+h*.88},{id:'l',x,y:y+h*.4}]}
-  },
-  db:{
-    name:'데이터베이스',
-    ico:`<svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="#8b949e" stroke-width="2"><ellipse cx="19" cy="10" rx="13" ry="5"/><path d="M6,10 L6,28 Q6,33 19,33 Q32,33 32,28 L32,10"/><ellipse cx="19" cy="19" rx="13" ry="5"/></svg>`,
-    dw:90,dh:100,
-    render(s){
-      const{x,y,w,h,fill,stroke,sw}=s,ry=h*.12;
-      return `<path class="shape-main" d="M${x},${y+ry} Q${x},${y+h} ${x+w/2},${y+h} Q${x+w},${y+h} ${x+w},${y+ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" fill-opacity="1"/>
-              <rect x="${x}" y="${y+ry}" width="${w}" height="${h-ry-ry}" fill="${fill}" stroke="none"/>
-              <ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w/2}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>
-              <ellipse cx="${x+w/2}" cy="${y+ry}" rx="${w/2}" ry="${ry}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
-    },
-    cp(s){const{x,y,w,h}=s;return[{id:'t',x:x+w/2,y},{id:'r',x:x+w,y:y+h/2},{id:'b',x:x+w/2,y:y+h},{id:'l',x,y:y+h/2}]}
-  }
-};
-
-/* ============================================================
-   STATE
-   ============================================================ */
-let nid=1;const gid=()=>`e${nid++}`;
-
-const S={
-  tool:'select',
-  strokeColor:'#58a6ff',fillColor:'#21262d',strokeWidth:2,
-  shapes:[],connections:[],fpaths:[],
-  isDown:false,drawPts:null,
-  isDrag:false,dragId:null,dox:0,doy:0,
-  isConn:false,connFrom:null,
-  sel:null,
-  placing:null  // shape type being dragged from panel
-};
-
-/* DOM */
-const $=id=>document.getElementById(id);
-const svg=$('cv'),lp=$('lp'),lc=$('lc'),ls=$('ls'),lt=$('lt');
-const ghost=$('ghost');
-
-/* ============================================================
-   RENDER
-   ============================================================ */
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-
-function renderAll(){
-  renderPaths();renderConns();renderShapes();
-  $('scnt').textContent=S.shapes.length;
-  $('pcnt').textContent=S.fpaths.length;
-  $('ccnt').textContent=S.connections.length;
-}
-
-function renderShapes(){
-  ls.innerHTML='';
-  for(const s of S.shapes){
-    const def=SD[s.type];if(!def)continue;
-    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.classList.add('shape-g');g.dataset.id=s.id;
-    const isSel=S.sel?.id===s.id&&S.sel?.type==='shape';
-
-    let html=def.render(s);
-    if(isSel){html+=`<rect x="${s.x-4}" y="${s.y-4}" width="${s.w+8}" height="${s.h+8}" fill="none" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="5 3" rx="4" pointer-events="none"/>`;}
-    html+=`<text class="slabel" x="${s.x+s.w/2}" y="${s.y+s.h/2}">${esc(s.label)}</text>`;
-    for(const p of def.cp(s)){html+=`<circle class="cp" cx="${p.x}" cy="${p.y}" r="5" data-sid="${s.id}" data-pid="${p.id}"/>`;}
-    g.innerHTML=html;ls.appendChild(g);
-  }
-}
-
-function renderConns(){
-  lc.innerHTML='';
-  for(const c of S.connections){
-    const fs=S.shapes.find(s=>s.id===c.fid);
-    const ts=S.shapes.find(s=>s.id===c.tid);
-    if(!fs||!ts)continue;
-    const fp=SD[fs.type]?.cp(fs).find(p=>p.id===c.fpt);
-    const tp=SD[ts.type]?.cp(ts).find(p=>p.id===c.tpt);
-    if(!fp||!tp)continue;
-    const isSel=S.sel?.id===c.id;
-    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.classList.add('cl');path.dataset.id=c.id;
-    if(isSel)path.classList.add('csel');
-    path.setAttribute('d',bezier(fp,tp,c.fpt));
-    path.setAttribute('stroke',isSel?'#3fb950':c.stroke);
-    path.setAttribute('stroke-width',c.sw);
-    path.setAttribute('marker-end',isSel?'url(#arr-sel)':'url(#arr)');
-    lc.appendChild(path);
-  }
-}
-
-function renderPaths(){
-  lp.innerHTML='';
-  for(const fp of S.fpaths){
-    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.classList.add('fp');p.dataset.id=fp.id;
-    p.setAttribute('d',fp.d);p.setAttribute('stroke',fp.stroke);
-    p.setAttribute('stroke-width',fp.sw);
-    lp.appendChild(p);
-  }
-}
-
-function bezier(a,b,fptId){
-  const dx=b.x-a.x,dy=b.y-a.y;
-  const off=Math.max(60,Math.abs(dx)*.45,Math.abs(dy)*.45);
-  let cx1,cy1;
-  if(fptId==='t'){cx1=a.x;cy1=a.y-off;}
-  else if(fptId==='b'){cx1=a.x;cy1=a.y+off;}
-  else if(fptId==='l'){cx1=a.x-off;cy1=a.y;}
-  else{cx1=a.x+off;cy1=a.y;}
-  const cx2=b.x+(cx1>a.x?-off*.4:off*.4),cy2=b.y+(cy1>a.y?-off*.4:off*.4);
-  return `M${a.x},${a.y} C${cx1},${cy1} ${cx2},${cy2} ${b.x},${b.y}`;
-}
-
-function pts2path(pts){
-  if(pts.length<2)return '';
-  let d=`M${pts[0].x},${pts[0].y}`;
-  for(let i=1;i<pts.length-1;i++){
-    const mx=(pts[i].x+pts[i+1].x)/2,my=(pts[i].y+pts[i+1].y)/2;
-    d+=` Q${pts[i].x},${pts[i].y} ${mx},${my}`;
-  }
-  d+=` L${pts[pts.length-1].x},${pts[pts.length-1].y}`;
-  return d;
-}
-
-/* ============================================================
-   EVENTS
-   ============================================================ */
-function svgPt(e){const r=svg.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
-function dist(a,b){return Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2)}
-
-function initEvents(){
-  $('cvwrap').addEventListener('contextmenu',e=>e.preventDefault());
-  svg.addEventListener('mousedown',onDown);
-  window.addEventListener('mousemove',onMove);
-  window.addEventListener('mouseup',onUp);
-  svg.addEventListener('dblclick',onDbl);
-
-  window.addEventListener('keydown',e=>{
-    const tag=document.activeElement?.tagName;
-    if(tag==='INPUT'||tag==='TEXTAREA')return;
-    if(e.key==='Delete'||e.key==='Backspace')delSel();
-    if(e.key==='v'||e.key==='V')setTool('select');
-    if(e.key==='p'||e.key==='P')setTool('pen');
-    if(e.key==='e'||e.key==='E')setTool('eraser');
-    if(e.key==='c'||e.key==='C')setTool('connect');
-    if(e.key==='Escape'){S.sel=null;svg.classList.remove('svg-connecting');renderAll();}
-  });
-
-  // Panel shape drag
-  window.addEventListener('mousemove',e=>{
-    if(!S.placing)return;
-    ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
-  });
-  window.addEventListener('mouseup',e=>{
-    if(!S.placing)return;
-    ghost.style.display='none';
-    // Check if over canvas
-    const cvr=svg.getBoundingClientRect();
-    if(e.clientX>=cvr.left&&e.clientX<=cvr.right&&e.clientY>=cvr.top&&e.clientY<=cvr.bottom){
-      placeShape(S.placing,svgPt(e));
-    }
-    S.placing=null;
-  });
-}
-
-function onDown(e){
-  const p=svgPt(e);
-  S.isDown=true;
-  // Right click → erase
-  if(e.button===2){eraseAt(p);return;}
-
-  const tool=S.tool;
-
-  // PEN
-  if(tool==='pen'){S.drawPts=[p];return;}
-
-  // ERASER
-  if(tool==='eraser'){eraseAt(p);return;}
-
-  // Connection point clicked (any tool)
-  if(e.target.classList.contains('cp')){
-    const sid=e.target.dataset.sid,pid=e.target.dataset.pid;
-    const shape=S.shapes.find(s=>s.id===sid);
-    if(shape){
-      const pt=SD[shape.type]?.cp(shape).find(p=>p.id===pid);
-      if(pt){
-        S.isConn=true;
-        S.connFrom={sid,pid,x:pt.x,y:pt.y};
-        svg.classList.add('svg-connecting');
-        return;
-      }
-    }
-  }
-
-  // SELECT
-  if(tool==='select'||tool==='connect'){
-    const g=e.target.closest('.shape-g');
-    if(g){
-      const id=g.dataset.id,shape=S.shapes.find(s=>s.id===id);
-      S.sel={type:'shape',id};
-      if(tool==='select'&&!e.target.classList.contains('cp')){
-        S.isDrag=true;S.dragId=id;
-        S.dox=p.x-shape.x;S.doy=p.y-shape.y;
-      }
-      renderAll();return;
-    }
-    if(e.target.classList.contains('cl')){
-      S.sel={type:'conn',id:e.target.dataset.id};renderAll();return;
-    }
-    if(e.target.id==='cvbg'){S.sel=null;renderAll();}
-  }
-}
-
-function onMove(e){
-  const p=svgPt(e);
-  $('spos').textContent=`${Math.round(p.x)}, ${Math.round(p.y)}`;
-  if(!S.isDown)return;
-
-  // Right drag = erase
-  if(e.buttons===2){eraseAt(p);return;}
-
-  // Pen drawing
-  if(S.tool==='pen'&&S.drawPts){
-    S.drawPts.push(p);
-    let tp=lt.querySelector('#tdp');
-    if(!tp){tp=document.createElementNS('http://www.w3.org/2000/svg','path');tp.id='tdp';tp.classList.add('fp');lt.appendChild(tp);}
-    tp.setAttribute('d',pts2path(S.drawPts));
-    tp.setAttribute('stroke',S.strokeColor);tp.setAttribute('stroke-width',S.strokeWidth);
-    return;
-  }
-
-  // Eraser drag
-  if(S.tool==='eraser'&&e.buttons===1){eraseAt(p);return;}
-
-  // Drag shape
-  if(S.isDrag&&S.dragId){
-    const s=S.shapes.find(sh=>sh.id===S.dragId);
-    if(s){s.x=p.x-S.dox;s.y=p.y-S.doy;renderAll();}
-    return;
-  }
-
-  // Connection drawing
-  if(S.isConn&&S.connFrom){
-    lt.innerHTML='';
-    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.classList.add('clt');
-    path.setAttribute('d',`M${S.connFrom.x},${S.connFrom.y} L${p.x},${p.y}`);
-    path.setAttribute('stroke',S.strokeColor);path.setAttribute('stroke-width',Math.max(1,S.strokeWidth));
-    lt.appendChild(path);
-    // Highlight target cp
-    document.querySelectorAll('.cp.cphover').forEach(el=>el.classList.remove('cphover'));
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    if(el?.classList.contains('cp'))el.classList.add('cphover');
-    return;
-  }
-}
-
-function onUp(e){
-  const p=svgPt(e);
-
-  // Finish pen stroke
-  if(S.tool==='pen'&&S.drawPts&&S.drawPts.length>1){
-    S.fpaths.push({id:gid(),d:pts2path(S.drawPts),stroke:S.strokeColor,sw:S.strokeWidth});
-    S.drawPts=null;lt.innerHTML='';renderAll();
-  }
-  S.drawPts=null;
-
-  // Finish connection
-  if(S.isConn&&S.connFrom){
-    document.querySelectorAll('.cp.cphover').forEach(el=>el.classList.remove('cphover'));
-    const el=document.elementFromPoint(e.clientX,e.clientY);
-    if(el?.classList.contains('cp')){
-      const tid=el.dataset.sid,tpid=el.dataset.pid;
-      if(tid!==S.connFrom.sid){
-        S.connections.push({id:gid(),fid:S.connFrom.sid,fpt:S.connFrom.pid,tid,tpt:tpid,stroke:S.strokeColor,sw:S.strokeWidth});
-      }
-    }
-    S.isConn=false;S.connFrom=null;lt.innerHTML='';
-    svg.classList.remove('svg-connecting');
-    renderAll();
-  }
-
-  S.isDown=false;S.isDrag=false;S.dragId=null;
-}
-
-function onDbl(e){
-  const g=e.target.closest('.shape-g');if(!g)return;
-  const s=S.shapes.find(sh=>sh.id===g.dataset.id);if(!s)return;
-  const v=prompt('도형 이름 변경:',s.label||'');
-  if(v!==null){s.label=v;renderAll();}
-}
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function eraseAt(p){
-  const R=Math.max(S.strokeWidth*4,12);
-  const before=S.fpaths.length;
-  S.fpaths=S.fpaths.filter(fp=>{
-    const el=lp.querySelector(`[data-id="${fp.id}"]`);if(!el)return true;
-    try{
-      const len=el.getTotalLength(),step=Math.max(3,len/200);
-      for(let t=0;t<=len;t+=step){
-        const pt=el.getPointAtLength(t);
-        if(dist({x:pt.x,y:pt.y},p)<R)return false;
-      }
-    }catch(err){}
-    return true;
-  });
-  if(S.fpaths.length!==before)renderPaths();
-}
-
-function placeShape(type,p){
-  const def=SD[type];if(!def)return;
-  const s={id:gid(),type,x:p.x-def.dw/2,y:p.y-def.dh/2,w:def.dw,h:def.dh,fill:S.fillColor,stroke:S.strokeColor,sw:S.strokeWidth,label:def.name};
-  S.shapes.push(s);S.sel={type:'shape',id:s.id};renderAll();
-}
-
-function delSel(){
-  if(!S.sel)return;
-  if(S.sel.type==='shape'){
-    S.shapes=S.shapes.filter(s=>s.id!==S.sel.id);
-    S.connections=S.connections.filter(c=>c.fid!==S.sel.id&&c.tid!==S.sel.id);
-  }else if(S.sel.type==='conn'){
-    S.connections=S.connections.filter(c=>c.id!==S.sel.id);
-  }
-  S.sel=null;renderAll();
-}
-
-/* ============================================================
-   TOOLBAR INIT
-   ============================================================ */
-const TNAMES={select:'선택 모드',pen:'펜 모드',eraser:'지우개 모드',connect:'연결선 모드'};
-const CURSORS={select:'default',pen:'crosshair',eraser:'cell',connect:'crosshair'};
-
-function setTool(t){
-  S.tool=t;
-  document.querySelectorAll('.tbtn[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===t));
-  $('stool').textContent=TNAMES[t]||t;
-  $('cvwrap').style.cursor=CURSORS[t]||'default';
-}
-
-function initToolbar(){
-  document.querySelectorAll('.tbtn[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
-
-  $('sc').addEventListener('input',e=>{
-    S.strokeColor=e.target.value;
-    if(S.sel?.type==='shape'){const s=S.shapes.find(sh=>sh.id===S.sel.id);if(s){s.stroke=S.strokeColor;renderAll();}}
-    if(S.sel?.type==='conn'){const c=S.connections.find(cn=>cn.id===S.sel.id);if(c){c.stroke=S.strokeColor;renderAll();}}
-  });
-  $('fc').addEventListener('input',e=>{
-    S.fillColor=e.target.value;
-    if(S.sel?.type==='shape'){const s=S.shapes.find(sh=>sh.id===S.sel.id);if(s){s.fill=S.fillColor;renderAll();}}
-  });
-  $('sw').addEventListener('input',e=>{
-    S.strokeWidth=+e.target.value;$('swv').textContent=e.target.value;
-    if(S.sel?.type==='shape'){const s=S.shapes.find(sh=>sh.id===S.sel.id);if(s){s.sw=S.strokeWidth;renderAll();}}
-    if(S.sel?.type==='conn'){const c=S.connections.find(cn=>cn.id===S.sel.id);if(c){c.sw=S.strokeWidth;renderAll();}}
-  });
-
-  $('btn-del').addEventListener('click',delSel);
-  $('btn-clear').addEventListener('click',()=>{
-    if(confirm('전체를 삭제하시겠습니까?')){S.shapes=[];S.connections=[];S.fpaths=[];S.sel=null;renderAll();}
-  });
-}
-
-/* ============================================================
-   SHAPE PANEL INIT
-   ============================================================ */
-function initPanel(){
-  const panel=$('spanel');
-  for(const[key,def]of Object.entries(SD)){
-    const el=document.createElement('div');
-    el.className='sitem';el.title=def.name;
-    el.innerHTML=def.ico;
-    el.addEventListener('mousedown',e=>{
-      e.preventDefault();
-      S.placing=key;
-      ghost.innerHTML=def.ico;
-      ghost.style.display='block';
-      ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
-    });
-    panel.appendChild(el);
-  }
-}
-
-/* ============================================================
-   BOOTSTRAP
-   ============================================================ */
-initPanel();initToolbar();initEvents();setTool('select');renderAll();
-
-// Keyboard shortcut tooltip
-const tipEl=document.createElement('div');tipEl.className='tip';tipEl.style.display='none';document.body.appendChild(tipEl);
-document.querySelectorAll('.tbtn[title]').forEach(b=>{
-  b.addEventListener('mouseenter',e=>{
-    tipEl.textContent=b.title;
-    const r=b.getBoundingClientRect();
-    tipEl.style.left=r.left+r.width/2+'px';
-    tipEl.style.top=r.top-8+'px';
-    tipEl.style.display='block';
-  });
-  b.addEventListener('mouseleave',()=>tipEl.style.display='none');
-});
-</script>
+<script src="shapes.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
