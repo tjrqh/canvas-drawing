@@ -1,4 +1,4 @@
-# 311 — SVG 다이어그램 편집기
+# canvas-drawing — SVG 다이어그램 편집기
 
 순수 바닐라 JavaScript와 SVG로 구현한 웹 기반 다이어그램 · 도형 편집 도구입니다.
 
